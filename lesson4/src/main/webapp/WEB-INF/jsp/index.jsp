@@ -12,5 +12,7 @@
 </head>
 <body>
 你已成功访问到主页面！
+<div><img src="/zhaolong/1/resources/1111.jpg"></div>
+<%--<img src="../../../resources/static/1111.jpg">--%>
 </body>
 </html>

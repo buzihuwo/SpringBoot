@@ -2,10 +2,7 @@ package com.zhaolong.lesson4;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 
 @Configuration
 public class SessionConfiguration implements WebMvcConfigurer {
@@ -19,6 +16,12 @@ public class SessionConfiguration implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new SessionIntercptor()).addPathPatterns("/**");
 
+    }
+    //资源处理
+    @Override
+    public  void addResourceHandlers(ResourceHandlerRegistry registry) {
+        //路径替换
+        registry.addResourceHandler("/zhaolong/1/resources/**").addResourceLocations("classpath:/static/");
     }
 
 }
