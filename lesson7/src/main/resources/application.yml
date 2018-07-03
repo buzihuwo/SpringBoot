@@ -1,0 +1,15 @@
+#屏蔽记录日志
+logging:
+  level:
+    com.zhaolong.lesson7.controller: 'off'
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+  servlet:
+    multipart:
+#      单个文件大小
+      max-file-size: 1024Mb
+#      总上传的数据大小
+      max-request-size: 2024Mb
