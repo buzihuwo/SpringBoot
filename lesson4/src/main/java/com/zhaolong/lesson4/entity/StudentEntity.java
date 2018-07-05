@@ -1,11 +1,13 @@
 package com.zhaolong.lesson4.entity;
 
+import com.zhaolong.lesson4.base.BaseEntity;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "Student")
-public class StudentEntity implements Serializable {
+public class StudentEntity extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
