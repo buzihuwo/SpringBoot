@@ -1,10 +1,9 @@
 package com.zhaolong.lesson4.controller;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.zhaolong.lesson4.entity.*;
 import com.zhaolong.lesson4.jpa.GoodJPA;
-import com.zhaolong.lesson4.utils.Inquirer;
+import com.zhaolong.lesson4.utils.InquirerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityManager;
@@ -46,7 +45,7 @@ public class GoodController {
 //        }
 //        return list;
         // 自定义查询对象
-        Inquirer inquirer=new Inquirer();
+        InquirerUtils inquirer=new InquirerUtils();
         //添加查询条件
         inquirer.putExpression(qGoodEntity.typeGuid.guid.eq("5de46db5a73b4f429133d5acab07ec19"));
         inquirer.putExpression(qGoodEntity.guid.eq("492312c415fc4c6284a20638d76b8698"));

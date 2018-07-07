@@ -7,10 +7,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Inquirer {
+//条件筛选
+public class InquirerUtils {
     //查询条件集合
     private List<BooleanExpression> expressions;
-    public Inquirer() {
+    public InquirerUtils() {
         this.expressions = new ArrayList<>();
     }
     /**
@@ -18,7 +19,7 @@ public class Inquirer {
      * @param expression 查询条件继承BooleanExpression抽象对象的具体实体对象,querydsl已经封装
      * @return
      */
-    public Inquirer putExpression(BooleanExpression expression)
+    public InquirerUtils putExpression(BooleanExpression expression)
     {
         //添加到条件集合
         expressions.add(expression);

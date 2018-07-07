@@ -1,4 +1,4 @@
-package com.zhaolong.lesson4;
+package com.zhaolong.lesson4.configuration;
 
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
