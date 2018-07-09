@@ -23,21 +23,19 @@ import java.util.concurrent.TimeUnit;
 public class RedisController {
     @Autowired
     private GoodJPA goodJPA;
-    @Autowired
-    private RedisUtils redisUtils;
 
     @GetMapping("/getRedisString")
     public Object getRedisString() {
         String cacheName = "good";
         String casheId = "string";
-        if (redisUtils.isExistence(cacheName, casheId)) {/*是否存在*/
-            return JSON.parseArray(redisUtils.getRedisString(cacheName, casheId), GoodEntity.class);
+        if (RedisUtils.isExistence(cacheName, casheId)) {/*是否存在*/
+            return JSON.parseArray(RedisUtils.getRedisString(cacheName, casheId), GoodEntity.class);
         } else {
             List<GoodEntity> list = getGoodEntityList("5de46db5a73b4f429133d5acab07ec19");
             String goodEntityJson = JSON.toJSONString(list);
 
-            redisUtils.setRedisString(cacheName, casheId, goodEntityJson);
-            redisUtils.setExpireTime(cacheName, casheId, 5, TimeUnit.MINUTES);
+            RedisUtils.setRedisString(cacheName, casheId, goodEntityJson);
+            RedisUtils.setExpireTime(cacheName, casheId, 5, TimeUnit.MINUTES);
             return list;
         }
     }
@@ -47,8 +45,8 @@ public class RedisController {
         String cacheName = "good";
         String casheId = "hash";
         List<RedisHashResponse> RedisHashList = new ArrayList<RedisHashResponse>();
-        if (redisUtils.isExistence(cacheName, casheId)) {
-            Map<String, String> hashMap = redisUtils.getRedisHash(cacheName, casheId);
+        if (RedisUtils.isExistence(cacheName, casheId)) {
+            Map<String, String> hashMap = RedisUtils.GetRedisHash.getRedisHash(cacheName, casheId);
             if (hashMap != null) {
                 for (Map.Entry<String, String> entry : hashMap.entrySet()) {
                     RedisHashResponse redisHashResponse = new RedisHashResponse();
@@ -60,7 +58,7 @@ public class RedisController {
         } else {
             String uuid = UUID.randomUUID().toString();
             List<GoodEntity> list = getGoodEntityList("5de46db5a73b4f429133d5acab07ec19");
-            redisUtils.setRedisHash(cacheName, casheId, uuid, list);
+            RedisUtils.setRedisHash(cacheName, casheId, uuid, list);
             RedisHashResponse redisHashResponse = new RedisHashResponse();
             redisHashResponse.setKey(uuid);
             redisHashResponse.setValue(list);
@@ -68,7 +66,7 @@ public class RedisController {
 
             String uuid1 = UUID.randomUUID().toString();
             List<GoodEntity> list1 = getGoodEntityList("9c73fe5e3bf84d58a68c236bc0af0402");
-            redisUtils.setRedisHash(cacheName, casheId, uuid1, list1);
+            RedisUtils.setRedisHash(cacheName, casheId, uuid1, list1);
             RedisHashResponse redisHashResponse1 = new RedisHashResponse();
             redisHashResponse1.setKey(uuid);
             redisHashResponse1.setValue(list);
@@ -83,17 +81,30 @@ public class RedisController {
         String cacheName = "good";
         String casheId = "hash";
         String fieid = "df3ced27-d8e9-4ad8-86c4-d1f0664714d3";
-        Object value= redisUtils.getRedisHashByFieid(cacheName, casheId, fieid);
-        if(value!=null){
-            List<GoodEntity> obj=JSON.parseArray(value.toString(),GoodEntity.class);
-            redisUtils.setRedisHash(cacheName, casheId, fieid,obj);
+        Object value = RedisUtils.GetRedisHash.getRedisHashByFieid(cacheName, casheId, fieid);
+        if (value != null) {
+            List<GoodEntity> obj = JSON.parseArray(value.toString(), GoodEntity.class);
+            RedisUtils.setRedisHash(cacheName, casheId, fieid, obj);
             return obj;
         }
-         return null;
-
-
+        return null;
     }
 
+    @GetMapping("/setRedisLeftList")
+    public Object setRedisLeftList() {
+        String cacheName = "good";
+        String casheId = "List";
+        List<GoodEntity> list = getGoodEntityList("5de46db5a73b4f429133d5acab07ec19");
+        RedisUtils.SetRedisList.setRedisLeftList(cacheName, casheId,  list);
+        return list;
+    }
+
+    @GetMapping("/getRedisRightList")
+    public Object getRedisRightList() {
+        String cacheName = "good";
+        String casheId = "List";
+        return RedisUtils.GetRedisList.getRedisRightList(cacheName, casheId);
+    }
 
     private List<GoodEntity> getGoodEntityList(String uuid) {
         QGoodEntity qGoodEntity = QGoodEntity.goodEntity;
