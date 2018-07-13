@@ -7,6 +7,8 @@
  lesson6————使用拦截器记录你的SpringBoot的请求日志
  lesson7————实现SpringBoot单个、多个文件的上传和SpringBoot使用LogBack作为日志组件
  lesson8————使用SpringBoot validator让数据更真实 验证
+ lesson9————使用SpringSecurity让SpringBoot项目更安全
+ lesson10————swagger
 
 
 源码地址https://gitee.com/hengboy/spring-boot-chapter
