@@ -1,19 +1,19 @@
 package com.zhaolong.lesson11.controller;
 
 import com.zhaolong.lesson11.annotation.LoginRequired;
-import com.zhaolong.lesson11.entity.User;
 import com.zhaolong.lesson11.util.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+
+import static com.zhaolong.lesson11.util.JwtUtil.HEADER_STRING;
 
 @RestController
 @RequestMapping("/api")
@@ -25,9 +25,10 @@ public class ApiController {
 
     @LoginRequired
     @GetMapping("/test")
-    public Object testLogin(@RequestBody User user) {
-        String sss = request.getHeader(HttpHeaders.CONTENT_TYPE);
-        return sss;
+    public Object testLogin() throws Exception {
+        String auth = request.getHeader(HEADER_STRING);
+
+        return JwtUtil.getIdByJWT(auth);
     }
 
 
@@ -42,7 +43,7 @@ public class ApiController {
         if (isValidPassword(account)) {
             String jwt = JwtUtil.generateToken(account.username);
             return new HashMap<String, String>() {{
-                put("token", jwt);
+                put(HEADER_STRING, jwt);
             }};
         } else {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
