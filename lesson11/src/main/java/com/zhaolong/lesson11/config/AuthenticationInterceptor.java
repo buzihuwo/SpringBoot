@@ -12,8 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
-import static com.zhaolong.lesson11.util.JwtUtil.HEADER_STRING;
-
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -28,33 +26,15 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         LoginRequired methodAnnotation = method.getAnnotation(LoginRequired.class);
         // 有 @LoginRequired 注解，需要认证
         if (methodAnnotation != null) {
+
+            JwtUtil jwtUtil=getDAO(JwtUtil.class,request);
+
             // 执行认证
-            String token = request.getHeader(HEADER_STRING);  // 从 http 请求头中取出 token
+            String token = request.getHeader(jwtUtil.HEADER_STRING);  // 从 http 请求头中取出 token
             if (token == null) {
                 throw new RuntimeException("无token，请重新登录");
             }
-
-            JwtUtil.validateTokenAddUserIdToHeader(request);
-//            String userId;
-//            try {
-//                userId = JWT.decode(token).getAudience().get(0);  // 获取 token 中的 user id
-//            } catch (JWTDecodeException e) {
-//                throw new RuntimeException("token无效，请重新登录");
-//            }
-//            User user =getDAO(UserService.class,request).findById(userId);
-//            if (user == null) {
-//                throw new RuntimeException("用户不存在，请重新登录");
-//            }
-//            // 验证 token
-//            try {
-//                JWTVerifier verifier =  JWT.require(Algorithm.HMAC256(user.getPassword())).build();
-//                try {
-//                    verifier.verify(token);
-//                } catch (JWTVerificationException e) {
-//                    throw new RuntimeException("token无效，请重新登录");
-//                }
-//            } catch (UnsupportedEncodingException ignore) {}
-//            request.setAttribute("currentUser", user);
+            jwtUtil.validateTokenAddUserIdToHeader(request);
             return true;
         }
         return true;

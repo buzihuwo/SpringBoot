@@ -1,6 +1,7 @@
 package com.zhaolong.lesson11.controller;
 
 import com.zhaolong.lesson11.annotation.LoginRequired;
+import com.zhaolong.lesson11.entity.User;
 import com.zhaolong.lesson11.util.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-
-import static com.zhaolong.lesson11.util.JwtUtil.HEADER_STRING;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -22,13 +22,14 @@ public class ApiController {
 
     @Autowired
     private HttpServletRequest request;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @LoginRequired
-    @GetMapping("/test")
-    public Object testLogin() throws Exception {
-        String auth = request.getHeader(HEADER_STRING);
-
-        return JwtUtil.getIdByJWT(auth);
+    @GetMapping("/userid")
+    public Object getUserId(){
+        String auth = request.getHeader(jwtUtil.HEADER_STRING);
+        return jwtUtil.getIdByJWT(auth);
     }
 
 
@@ -39,11 +40,12 @@ public class ApiController {
 
     @PostMapping("/token")
     @ApiOperation(value = "登陆获取token", notes = "")
-    public Object login(@RequestBody final Account account) {
+    public Object login(@RequestBody Account account) {
         if (isValidPassword(account)) {
-            String jwt = JwtUtil.generateToken(account.username);
+            User user=getUser();
+            String jwt = jwtUtil.generateToken(user.getUuid());
             return new HashMap<String, String>() {{
-                put(HEADER_STRING, jwt);
+                put(jwtUtil.HEADER_STRING, jwt);
             }};
         } else {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
@@ -58,7 +60,15 @@ public class ApiController {
     }
 
     private boolean isValidPassword(Account ac) {
-        return "admin".equals(ac.username)
-                && "admin".equals(ac.password);
+        User user=getUser();
+        return user.getName().equals(ac.username)&&  user.getPassword().equals(ac.password);
+    }
+
+    private  User getUser(){
+        User user=new User();
+        user.setUuid(UUID.randomUUID().toString().replace("-", ""));
+        user.setName("admin");
+        user.setPassword("admin");
+        return user;
     }
 }

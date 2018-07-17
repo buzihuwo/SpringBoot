@@ -1,0 +1,6 @@
+customfields:
+    expirationTime: 600000
+    jwtSecret: 7786df7fc3a34e26a61c034d5ec8245d
+    headerString: Authorization
+    tokenPrefix: Bearer
+    userName: userUuid

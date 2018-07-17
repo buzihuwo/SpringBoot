@@ -2,7 +2,10 @@ package com.zhaolong.lesson11.util;
 
 import io.jsonwebtoken.*;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
@@ -10,16 +13,37 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class JwtUtil {
-    public static final long EXPIRATION_TIME = 1000 * 60 * 10;
-    static final String JWT_SECRET = "7786df7fc3a34e26a61c034d5ec8245d";
-    public static final String HEADER_STRING = "Authorization";
-    public static final String TOKEN_PREFIX = "Bearer ";
-    public static final String USER_NAME = "userName";
+    @Autowired
+    private CustomFields customFields;
 
-    public static String generateToken(String username) {
+    public long EXPIRATION_TIME;
+    public String JWT_SECRET;
+    public String HEADER_STRING;
+    public String TOKEN_PREFIX;
+    public String USER_NAME;
+
+    @PostConstruct
+    private void init() {
+        EXPIRATION_TIME = customFields.getExpirationTime();
+        JWT_SECRET = customFields.getJwtSecret();
+        HEADER_STRING = customFields.getHeaderString();
+        TOKEN_PREFIX = customFields.getTokenPrefix()+" ";
+        USER_NAME = customFields.getUserName();
+    }
+
+
+
+
+    /**
+     * 生产Token
+     *
+     * @param userUuid
+     */
+    public String generateToken(String userUuid) {
         Map<String, Object> map = new HashMap<>();
-        map.put(USER_NAME, username);
+        map.put(USER_NAME, userUuid);
         //生成签名的时候使用的秘钥secret,这个方法本地封装了的，一般可以从本地配置文件中读取，切记这个秘钥不能外露哦。它就是你服务端的私钥，在任何场景都不应该流露出去。一旦客户端得知这个secret, 那就意味着客户端是可以自我签发jwt了。
         SecretKey key = generalKey();
         String jwt = Jwts.builder()//这里其实就是new一个JwtBuilder，设置jwt的body
@@ -30,7 +54,12 @@ public class JwtUtil {
         return TOKEN_PREFIX + jwt; //jwt前面一般都会加Bearer
     }
 
-    public static void validateTokenAddUserIdToHeader(HttpServletRequest request) throws Exception {
+    /**
+     * 验证Header
+     *
+     * @param request
+     */
+    public void validateTokenAddUserIdToHeader(HttpServletRequest request) {
         String token = request.getHeader(HEADER_STRING);
         parseJWT(token);
     }
@@ -39,11 +68,9 @@ public class JwtUtil {
      * 解密jwt
      *
      * @param token
-     * @return
-     * @throws Exception
      */
-    public static Claims parseJWT(String token) throws Exception {
-        Claims claims = null;
+    public Claims parseJWT(String token) {
+        Claims claims;
         if (token != null) {
             try {
                 //生成签名的时候使用的秘钥secret,这个方法本地封装了的，一般可以从本地配置文件中读取，切记这个秘钥不能外露哦。它就是你服务端的私钥，在任何场景都不应该流露出去。一旦客户端得知这个secret, 那就意味着客户端是可以自我签发jwt了。
@@ -70,9 +97,8 @@ public class JwtUtil {
      * 获取用户id
      *
      * @param jwt
-     * @return
      */
-    public static String getIdByJWT(String jwt) throws Exception {
+    public String getIdByJWT(String jwt) {
         Claims c = parseJWT(jwt);//注意：如果jwt已经过期了，这里会抛出jwt过期异常。
         return c.get(USER_NAME).toString();
     }
@@ -82,7 +108,7 @@ public class JwtUtil {
      *
      * @return
      */
-    public static SecretKey generalKey() {
+    public SecretKey generalKey() {
         //本地配置文件中加密的密文7786df7fc3a34e26a61c034d5ec8245d
         String stringKey = JWT_SECRET;
         //本地的密码解码[B@152f6e2
@@ -93,7 +119,7 @@ public class JwtUtil {
     }
 
 
-    static class TokenValidationException extends RuntimeException {
+    public class TokenValidationException extends RuntimeException {
         public TokenValidationException(String msg) {
             super(msg);
         }
